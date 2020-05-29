@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/scheduler.dart';
 
 class User{
-  final String uid;
   final String emailId;
   final String mobile;
   final String firstName;
@@ -15,14 +14,16 @@ class User{
   final String university_year;
   final String build_no;
   final String android_no;
+  //DateTime createdAt;
+
   
 
-  User({this.uid,this.college_name,this.department,this.emailId,this.firstName,this.lastName,this.mobile
+  User({this.college_name,this.department,this.emailId,this.firstName,this.lastName,this.mobile
           ,this.password,this.univ_name,this.university_year,this.android_no,this.build_no});
 
   factory User.fromJson(Map<String,dynamic> json){
     return User(
-      uid: json['uid'],
+      
       emailId: json['email_id'],
       mobile: json['mobile_no'],
       firstName: json['first_name'],
@@ -33,8 +34,8 @@ class User{
       university_year: json['univ_year_sem_id'],
       college_name: json['college_name'],
       build_no: json['build_no'],
-      android_no: json['android_id']
-      
+      android_no: json['android_id'],
+      //createdAt: DateTime.parse(json["created_datetime"]),
       
     );
   }
@@ -52,6 +53,7 @@ class User{
       map['univ_year_sem_id'] = university_year;
       map['build_no'] = build_no;
       map['android_id'] = android_no;
+     // map["created_datetime"] = createdAt;
       return map;
   }
 
@@ -67,7 +69,8 @@ class User{
       "college_name":college_name,
       "univ_year_sem_id":university_year,
       "build_no":build_no,
-      "android_id":android_no
+      "android_id":android_no,
+      //"created_datetime": createdAt.toIso8601String(),
     };
   }
 

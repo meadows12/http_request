@@ -4,21 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:post_request/utils/otp_send.dart';
+import 'package:post_request/utils/otp_verification.dart';
 import 'package:post_request/utils/user.dart';
 
-Future<User> createUser (String url, User user) async{
 
-    return http.post(url,headers: 
-          {'Content-Type':'application/json'},
-          body:json.encode(user.tojson())).then((http.Response response){
-      if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
-      throw new Exception("Error while fetching data");
-    }
-    return User.fromJson(json.decode(response.body));
-    });
-          
-    
-}
 
 class SignUp extends StatefulWidget {
   @override
@@ -27,12 +17,55 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
 
+   String userId;
+
+  Future<User> createUser (String url,{Map body}) async{
+
+    return http.post(url,
+          body:body).then((http.Response response){
+      if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+      throw new Exception("Error while fetching data");
+    }
+    //JsonDecoder().convert(response.body);
+    print(json.decode(response.body));
+   
+    var extractdata = json.decode(response.body);
+    userId = extractdata["uid"].toString();
+    print(userId);
+    return User.fromJson(json.decode(response.body));
+    });
+          
+  }
+
+  Future<OtpSend> otpSend(String url) async{
+
+    return http.post(url,
+          body:userId).then((http.Response response){
+      if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+      throw new Exception("Error while fetching data");
+    }
+    //JsonDecoder().convert(response.body);
+    print(json.decode(response.body));
+   
+    // var extractdata = json.decode(response.body);
+    // userId = extractdata["uid"];
+    // print(userId);
+    //return OtpSend.fromJson(json.decode(response.body));
+    });
+          
+  }
+
+    
+
+
   
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController name = TextEditingController();
   final TextEditingController mobile = TextEditingController();
-  final String create_url = "http://www.hiddenmasterminds.com/web/index.php?r=featured/createinitialstudent";
+  final String create_url = "http://www.hiddenmasterminds.com/web/index.php?r=student/createstudent";
+  final String otp_verification = "http://www.hiddenmasterminds.com/web/index.php?r=jguest/verifystudent";
+  static final otpSend_url = "http://www.hiddenmasterminds.com/web/index.php?r=student/reverifyotp";
   bool isChecked = false;
 
   Future<User> user;
@@ -58,10 +91,14 @@ class _SignUpState extends State<SignUp> {
                       ),
                       onPressed: () async {
                         User newUser  = new User(college_name: "abc",firstName: "mrunal",lastName:"joshi",password:"12abc",
-                                                  emailId: "mrun12@gmail.com",department: "abc",univ_name: "sppu",university_year: "123",mobile: "0098765432",android_no: "123",build_no: "123"  );
-                        User p = await createUser(create_url,newUser);
+                                                  emailId: "mr221@gmail.com",department: "abc",univ_name: "sppu",university_year: "123",mobile:"9413832230",android_no: "123",build_no: "123"  );
+                        User p = await createUser(create_url,body:newUser.toMap());
+                        //OtpSend o = OtpSend(userId: userId);
+                        await otpSend(otpSend_url);
+                        // String otp = "6890";
+                        // OtpVerification newOtp = new OtpVerification(otp:otp,userId: "6417");
+                        // OtpVerification s = await verifyotp(otp_verification,body:newOtp.toMap());
 
-                        print(p.college_name);
                       
                         
                       },
